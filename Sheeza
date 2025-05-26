@@ -1,0 +1,209 @@
+
+
+
+
+
+
+#include <iostream>
+#include <string>
+using namespace std;
+
+// Node structure
+struct Expense {
+    int id;
+    string name;
+    float price;
+    int day, month, year;
+    Expense* next;
+};
+
+// Class to manage the linked list
+class ExpenseTracker {
+private:
+    Expense* head;
+
+public:
+    ExpenseTracker() {
+        head = nullptr;
+    }
+
+    // Add a new expense
+    void addExpense(int id, string name, float price, int day, int month, int year) {
+        Expense* newExpense = new Expense;
+        newExpense->id = id;
+        newExpense->name = name;
+        newExpense->price = price;
+        newExpense->day = day;
+        newExpense->month = month;
+        newExpense->year = year;
+        newExpense->next = head;
+        head = newExpense;
+        cout << "Expense added successfully!\n";
+    }
+
+    // View all expenses
+    void viewExpenses() {
+        if (head == nullptr) {
+            cout << " No expenses found.\n";
+            return;
+        }
+
+        cout << "\n All Expenses:\n";
+        Expense* temp = head;
+        while (temp != nullptr) {
+            cout << "ID: " << temp->id
+                 << " | Name: " << temp->name
+                 << " | Price: Rs. " << temp->price
+                 << " | Date: " << temp->day << "/" << temp->month << "/" << temp->year
+                 << endl;
+            temp = temp->next;
+        }
+    }
+
+    // Generate monthly report (no bool used)
+    void generateMonthlyReport(int month, int year) {
+        float total = 0;
+        int count = 0;
+
+        Expense* temp = head;
+        while (temp != nullptr) {
+            if (temp->month == month && temp->year == year) {
+                total += temp->price;
+                count++;
+            }
+            temp = temp->next;
+        }
+
+        if (count > 0) {
+            cout << "\n Total expenses for " << month << "/" << year << ": Rs. " << total << endl;
+        } else {
+            cout << "\n No expenses found for " << month << "/" << year << endl;
+        }
+    }
+
+    // Show addresses in master list
+    void showMasterList() {
+        if (head == nullptr) {
+            cout << " No expenses to show.\n";
+            return;
+        }
+
+        cout << "\n Master List (Addresses of all nodes):\n";
+        Expense* temp = head;
+        while (temp != nullptr) {
+            cout << "Node Address: " << temp << " -> ";
+            temp = temp->next;
+        }
+        cout << "NULL\n";
+    }
+
+    // Edit an existing expense
+    void editExpense(int id) {
+        Expense* temp = head;
+        while (temp != nullptr) {
+            if (temp->id == id) {
+                cout << "\n Editing Expense ID: " << id << endl;
+                cout << "Enter new Name (no spaces): ";
+                cin >> temp->name;
+                cout << "Enter new Price: ";
+                cin >> temp->price;
+                cout << "Enter new Date (dd mm yyyy): ";
+                cin >> temp->day >> temp->month >> temp->year;
+                cout << " Expense updated successfully!\n";
+                return;
+            }
+            temp = temp->next;
+        }
+        cout << " Expense with ID " << id << " not found.\n";
+    }
+
+    // Delete an expense
+    void deleteExpense(int id) {
+        Expense* temp = head;
+        Expense* prev = nullptr;
+
+        while (temp != nullptr) {
+            if (temp->id == id) {
+                if (prev == nullptr) {
+                    head = temp->next; // deleting head
+                } else {
+                    prev->next = temp->next;
+                }
+                delete temp;
+                cout << " Expense deleted successfully!\n";
+                return;
+            }
+            prev = temp;
+            temp = temp->next;
+        }
+        cout << " Expense with ID " << id << " not found.\n";
+    }
+};
+
+// Main function
+int main() {
+    ExpenseTracker tracker;
+    int choice;
+
+    do {
+        cout << "\n========== Expense Tracker Menu ==========\n";
+        cout << "1. Add New Expense\n";
+        cout << "2. View All Expenses\n";
+        cout << "3. Generate Monthly Report\n";
+        cout << "4. Show Master List\n";
+        cout << "5. Edit Expense\n";
+        cout << "6. Delete Expense\n";
+        cout << "7. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        if (choice == 1) {
+            int id, day, month, year;
+            float price;
+            string name;
+
+            cout << "Enter ID: ";
+            cin >> id;
+            cout << "Enter Name (no spaces): ";
+            cin >> name;
+            cout << "Enter Price: ";
+            cin >> price;
+            cout << "Enter Date (dd mm yyyy): ";
+            cin >> day >> month >> year;
+
+            tracker.addExpense(id, name, price, day, month, year);
+
+        } else if (choice == 2) {
+            tracker.viewExpenses();
+
+        } else if (choice == 3) {
+            int month, year;
+            cout << "Enter month and year (mm yyyy): ";
+            cin >> month >> year;
+            tracker.generateMonthlyReport(month, year);
+
+        } else if (choice == 4) {
+            tracker.showMasterList();
+
+        } else if (choice == 5) {
+            int id;
+            cout << "Enter Expense ID to edit: ";
+            cin >> id;
+            tracker.editExpense(id);
+
+        } else if (choice == 6) {
+            int id;
+            cout << "Enter Expense ID to delete: ";
+            cin >> id;
+            tracker.deleteExpense(id);
+
+        } else if (choice == 7) {
+            cout << "Exiting the program.\n";
+
+        } else {
+            cout << "Invalid choice. Try again.\n";
+        }
+
+    } while (choice != 7);
+
+    return 0;
